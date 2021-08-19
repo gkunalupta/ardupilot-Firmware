@@ -2,10 +2,12 @@
 
 #include <stdint.h>
 
-#include "AP_HAL_Namespace.h"
-#include "AP_HAL_Boards.h"
-#include "AP_HAL_Macros.h"
-#include "AP_HAL_Main.h"
+#include "AP_HAL_Namespace.h"    // groups all the classes under one name AP_HAL
+#include "AP_HAL_Boards.h"       // Macros to configure the underlying OS(Chibios/Linux/SITL)
+                                 // and features to use for sensors
+
+#include "AP_HAL_Macros.h"       //
+#include "AP_HAL_Main.h"         //Macros which calls the main and setup code in application code.
 
 /* HAL Module Classes (all pure virtual) */
 #include "UARTDriver.h"

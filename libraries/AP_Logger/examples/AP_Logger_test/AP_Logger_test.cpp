@@ -29,7 +29,7 @@ static const struct LogStructure log_structure[] = {
     }
 };
 
-#define NUM_PACKETS 500
+#define NUM_PACKETS 2
 
 static uint16_t log_num;
 
@@ -75,12 +75,15 @@ void AP_LoggerTest::setup(void)
 
     uint32_t total_micros = 0;
     uint16_t i;
-
-    for (i = 0; i < NUM_PACKETS; i++) {
+    hal.console->printf("Gupta\n");
+    for (i = 0; i < NUM_PACKETS; i++)
+    {
         uint32_t start = AP_HAL::micros();
         // note that we use g++ style initialisers to make larger
-        // structures easier to follow        
-        struct log_Test pkt = {
+        // structures easier to follow
+        hal.console->printf("youtube\n");
+        struct log_Test pkt =
+        {
             LOG_PACKET_HEADER_INIT(LOG_TEST_MSG),
             v1    : (uint16_t)(2000 + i),
             v2    : (uint16_t)(2001 + i),
@@ -89,11 +92,12 @@ void AP_LoggerTest::setup(void)
             l1    : (int32_t)(i * 5000),
             l2    : (int32_t)(i * 16268)
         };
+        hal.console->printf("gettobyte\n");
         logger.WriteBlock(&pkt, sizeof(pkt));
         total_micros += AP_HAL::micros() - start;
         hal.scheduler->delay(20);
     }
-
+    hal.console->printf("kunal\n");
     hal.console->printf("Average write time %.1f usec/byte\n", 
                        (double)total_micros/((double)i*sizeof(struct log_Test)));
 

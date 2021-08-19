@@ -411,6 +411,7 @@ bool AP_Logger_Backend::WritePrioritisedBlock(const void *pBuffer, uint16_t size
     if (!WritesOK()) {
         return false;
     }
+    hal.console->printf("backend_write_priortised\n");
     return _WritePrioritisedBlock(pBuffer, size, is_critical);
 }
 

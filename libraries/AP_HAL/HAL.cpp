@@ -5,7 +5,7 @@
 namespace AP_HAL {
 
 HAL::FunCallbacks::FunCallbacks(void (*setup_fun)(void), void (*loop_fun)(void))
-    : _setup(setup_fun)
+    : _setup(setup_fun)       //initilises the loop and setup function of HAL, with application code of main and setup.
     , _loop(loop_fun)
 {
 }

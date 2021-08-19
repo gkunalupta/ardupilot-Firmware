@@ -27,12 +27,12 @@ Format characters in the format string for binary log messages
   q   : int64_t
   Q   : uint64_t
  */
-
+// Unit Structure
 struct UnitStructure {
     const char ID;
     const char *unit;
 };
-
+// Multiplier structure
 struct MultiplierStructure {
     const char ID;
     const double multiplier;
@@ -41,6 +41,7 @@ struct MultiplierStructure {
 // all units here should be base units
 // This does mean battery capacity is here as "amp*second"
 // Please keep the names consistent with Tools/autotest/param_metadata/param.py:33
+//units of different values calculated by sensors and controls
 const struct UnitStructure log_Units[] = {
     { '-', "" },              // no units e.g. Pi, or a string
     { '?', "UNKNOWN" },       // Units which haven't been worked out yet....
@@ -86,7 +87,7 @@ const struct UnitStructure log_Units[] = {
 // Essentially "format" simply tells you the C-type, and format-type h
 // (int16_t) is equivalent to format-type c (int16_t*100)
 // tl;dr a GCS shouldn't/mustn't infer any scaling from the unit name
-
+// this represenst the 10 raised to power for our calculations
 const struct MultiplierStructure log_Multipliers[] = {
     { '-', 0 },       // no multiplier e.g. a string
     { '?', 1 },       // multipliers which haven't been worked out yet....

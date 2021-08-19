@@ -46,10 +46,12 @@ static AP_GPS gps;
 // Serial manager is needed for UART communications
 static AP_SerialManager serial_manager;
 
+
 //to be called only once on boot for initializing objects
 void setup()
 {
-    hal.console->printf("GPS AUTO library test\n");
+
+	hal.console->printf("GPS AUTO library test\n");
 
     board_config.init();
 
@@ -59,6 +61,7 @@ void setup()
     // Initialize the UART for GPS system
     serial_manager.init();
     gps.init(serial_manager);
+    hal.console->printf("GPS 1\n");
 }
 
 
@@ -122,5 +125,6 @@ void loop()
     hal.scheduler->delay(10);
 }
 
+//hal.console->printf("kunal\n");
 // Register above functions in HAL board level
 AP_HAL_MAIN();

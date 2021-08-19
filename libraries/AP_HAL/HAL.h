@@ -20,6 +20,17 @@ class AP_Param;
 
 class AP_HAL::HAL {
 public:
+	/*links for Member initializer list:
+	 * 1) https://www.geeksforgeeks.org/when-do-we-use-initializer-list-in-c/
+	 * 2) https://www.educative.io/edpresso/what-are-initializer-lists-in-cpp
+	 * 3) https://www.learncpp.com/cpp-tutorial/constructor-member-initializer-lists/
+	 *
+	 * This is Member initializer list, in which Data member of
+	 * Class HAL are initialized.Initializer list starts after
+	 * Constructor name(in this case HAL) and its parameters(Class Object pointers).
+	 *
+	 *
+	 */
     HAL(AP_HAL::UARTDriver* _uartA, // console
         AP_HAL::UARTDriver* _uartB, // 1st GPS
         AP_HAL::UARTDriver* _uartC, // telem1

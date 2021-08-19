@@ -168,6 +168,7 @@ void AP_Logger::Init(const struct LogStructure *structures, uint8_t num_types)
             _next_backend++;
         }
     }
+    hal.console->printf("Filesystem\n");
 #endif // HAL_LOGGING_FILESYSTEM_ENABLED
 
 #if HAL_LOGGING_DATAFLASH_ENABLED
@@ -189,6 +190,7 @@ void AP_Logger::Init(const struct LogStructure *structures, uint8_t num_types)
             _next_backend++;
         }
     }
+    hal.console->printf("Data Flash\n");
 #endif
 
 #if HAL_LOGGING_SITL_ENABLED
@@ -210,6 +212,7 @@ void AP_Logger::Init(const struct LogStructure *structures, uint8_t num_types)
             _next_backend++;
         }
     }
+    hal.console->printf("SITL\n");
 #endif
     // the "main" logging type needs to come before mavlink so that index 0 is correct
 #if HAL_LOGGING_MAVLINK_ENABLED
@@ -232,15 +235,19 @@ void AP_Logger::Init(const struct LogStructure *structures, uint8_t num_types)
             _next_backend++;
         }
     }
+    hal.console->printf("MavLink\n");
 #endif
+
+    hal.console->printf("Before backend\n");
 
     for (uint8_t i=0; i<_next_backend; i++) {
         backends[i]->Init();
     }
-
+    hal.console->printf("after backend and before thread\n");
     start_io_thread();
-
+    hal.console->printf("after thread\n");
     EnableWrites(true);
+    hal.console->printf("Out of init\n");
 }
 
 #if CONFIG_HAL_BOARD == HAL_BOARD_SITL
@@ -699,10 +706,12 @@ void AP_Logger::save_format_Replay(const void *pBuffer)
 
 
 // start functions pass straight through to backend:
-void AP_Logger::WriteBlock(const void *pBuffer, uint16_t size) {
+void AP_Logger::WriteBlock(const void *pBuffer, uint16_t size)
+{
 #if APM_BUILD_TYPE(APM_BUILD_Replay)
     save_format_Replay(pBuffer);
 #endif
+    //hal.console->printf("logger.cpp writeblock\n");
     FOR_EACH_BACKEND(WriteBlock(pBuffer, size));
 }
 

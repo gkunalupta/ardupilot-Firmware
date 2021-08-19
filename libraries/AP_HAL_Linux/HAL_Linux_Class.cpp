@@ -297,7 +297,7 @@ void HAL_Linux::run(int argc, char* const argv[], Callbacks* callbacks) const
 #if AP_MODULE_SUPPORTED
     const char *module_path = AP_MODULE_DEFAULT_DIRECTORY;
 #endif
-    
+
     int opt;
     const struct GetOptLong::option options[] = {
         {"uartA",         true,  0, 'A'},
@@ -388,6 +388,9 @@ void HAL_Linux::run(int argc, char* const argv[], Callbacks* callbacks) const
     serial(0)->begin(115200);
     analogin->init();
     utilInstance.init(argc+gopt.optind-1, &argv[gopt.optind-1]);
+
+  //  hal.console->printf("in hal_linux\n");
+
 
     // NOTE: See commit 9f5b4ffca ("AP_HAL_Linux_Class: Correct
     // deadlock, and infinite loop in setup()") for details about the

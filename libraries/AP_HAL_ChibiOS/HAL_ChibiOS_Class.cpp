@@ -165,7 +165,14 @@ extern const AP_HAL::HAL& hal;
 
 /*
   set the priority of the main APM task
+  Analogous to chThdSetPriority() function in chthreads.c
+ * @brief   Changes the running thread priority level then reschedules if
+ *          necessary.
+ * @param[in] priority   the new priority level of the running thread
+ *
+ * @api
  */
+
 void hal_chibios_set_priority(uint8_t priority)
 {
     chSysLock();
@@ -179,6 +186,7 @@ void hal_chibios_set_priority(uint8_t priority)
     chSysUnlock();
 }
 
+//Returns the pointer to current thread
 thread_t* get_main_thread()
 {
     return daemon_task;
@@ -188,10 +196,11 @@ static AP_HAL::HAL::Callbacks* g_callbacks;
 
 static void main_loop()
 {
-    daemon_task = chThdGetSelfX();
+    daemon_task = chThdGetSelfX();  //returns the pointer to the current thread
 
     /*
       switch to high priority for main loop
+      Set the current running thread(Which is main function) to current priority by changing its priorty to higher level(APM_MAIN_PRIORITY)
      */
     chThdSetPriority(APM_MAIN_PRIORITY);
 
@@ -208,7 +217,7 @@ static void main_loop()
     peripheral_power_enable();
 
     hal.serial(0)->begin(115200);
-
+    hal.console->printf("in chinios_hal\n");
 #ifdef HAL_SPI_CHECK_CLOCK_FREQ
     // optional test of SPI clock frequencies
     ChibiOS::SPIDevice::test_clock_freq();
@@ -297,6 +306,7 @@ void HAL_ChibiOS::run(int argc, char * const argv[], Callbacks* callbacks) const
     usb_initialise();
 #endif
 
+
 #ifdef HAL_STDOUT_SERIAL
     //STDOUT Initialisation
     SerialConfig stdoutcfg =
@@ -309,6 +319,7 @@ void HAL_ChibiOS::run(int argc, char * const argv[], Callbacks* callbacks) const
     sdStart((SerialDriver*)&HAL_STDOUT_SERIAL, &stdoutcfg);
 #endif
 
+    hal.console->printf("in chinios_hal\n");
     g_callbacks = callbacks;
 
     //Takeover main

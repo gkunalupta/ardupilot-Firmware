@@ -27,6 +27,7 @@
     extern "C" {                               \
     int AP_MAIN(int argc, char* const argv[]); \
     int AP_MAIN(int argc, char* const argv[]) { \
+    	hal.console->printf("kunal\n"); \
         hal.run(argc, argv, &callbacks); \
         return 0; \
     } \

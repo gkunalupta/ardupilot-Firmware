@@ -41,7 +41,10 @@ void setup(void)
 
 void loop(void)
 {
-    // do nothing
+    
+  hal.console->printf("AP_Common tests\n\n");
+hal.scheduler->delay(1000);
+// do nothing
 }
 
 AP_HAL_MAIN();

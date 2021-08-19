@@ -3,12 +3,32 @@
 /* ************************************************************ */
 #pragma once
 
-#include <AP_Filesystem/AP_Filesystem_Available.h>
+//#include <AP_Filesystem/AP_Filesystem_Available.h>
+
+#include <AP_HAL/AP_HAL_Boards.h>
+
 
 #ifndef HAL_LOGGING_ENABLED
 #define HAL_LOGGING_ENABLED 1
 #endif
 
+/*********** edited ***************/
+
+#ifndef HAL_LOGGING_DATAFLASH
+#define HAL_LOGGING_DATAFLASH 1
+#endif
+
+
+#ifndef HAL_LOGGING_MAVLINK
+#define HAL_LOGGING_MAVLINK 1
+#endif
+
+
+
+/******* Configure the Macros for Logging on Corresponding System
+ * Their are 4 Systems:
+ * 1) Data Flash 2) MavLink 3) FileSystem 4) SITL
+ */
 // set default for HAL_LOGGING_DATAFLASH_ENABLED
 #ifndef HAL_LOGGING_DATAFLASH_ENABLED
     #ifdef HAL_LOGGING_DATAFLASH
@@ -16,10 +36,6 @@
     #else
         #define HAL_LOGGING_DATAFLASH_ENABLED 0
     #endif
-#endif
-
-#ifndef HAL_LOGGING_MAVLINK_ENABLED
-    #define HAL_LOGGING_MAVLINK_ENABLED HAL_LOGGING_ENABLED
 #endif
 
 #ifndef HAL_LOGGING_FILESYSTEM_ENABLED
@@ -38,6 +54,26 @@
     #endif
 #endif
 
+
+/*** edited (should be uncommented by default)*/
+/*
+#ifndef HAL_LOGGING_MAVLINK_ENABLED
+    #define HAL_LOGGING_MAVLINK_ENABLED HAL_LOGGING_ENABLED
+#endif
+*/
+
+
+/***** edited *****/
+
+#ifndef HAL_LOGGING_MAVLINK_ENABLED
+    #if HAL_LOGGING_MAVLINK
+        #define HAL_LOGGING_MAVLINK_ENABLED HAL_LOGGING_ENABLED
+    #else
+        #define HAL_LOGGING_MAVLINK_ENABLED 0
+    #endif
+#endif
+
+/** Check the Macros are configured correctly for corresponding Systems  */
 #if HAL_LOGGING_SITL_ENABLED || HAL_LOGGING_DATAFLASH_ENABLED
     #define HAL_LOGGING_BLOCK_ENABLED 1
 #else
@@ -66,6 +102,10 @@
 #endif
 
 #endif
+
+
+
+
 
 #include <AP_HAL/AP_HAL.h>
 #include <AP_AHRS/AP_AHRS.h>
@@ -422,15 +462,15 @@ public:
     // LogStructure.h, however we need to remember a pointer value for
     // efficiency of finding message types
     struct log_write_fmt {
-        struct log_write_fmt *next;
+        struct log_write_fmt *next; //pointer to next log_fmt(linked list)
         uint8_t msg_type;
         uint8_t msg_len;
         uint8_t sent_mask; // bitmask of backends sent to
         const char *name;
-        const char *fmt;
+        const char *fmt;   //pointer to type of log message( Log structure.h)
         const char *labels;
-        const char *units;
-        const char *mults;
+        const char *units;  // Units : Unit Structure in Log structre.h
+        const char *mults; //multiplier : Multiplier structure in LogStructure.h
     } *log_write_fmts;
 
     // return (possibly allocating) a log_write_fmt for a name

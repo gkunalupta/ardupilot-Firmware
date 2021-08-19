@@ -14,6 +14,7 @@
  *
  * Code by Andrew Tridgell and Siddharth Bharat Purohit
  */
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <AP_HAL/AP_HAL.h>
@@ -60,7 +61,7 @@ typedef enum  {
 void *__dso_handle;
 
 void __cxa_pure_virtual(void);
-void __cxa_pure_virtual() { while (1); } //TODO: Handle properly, maybe generate a traceback
+void __cxa_pure_virtual() { while (1); }                 //TODO: Handle properly, maybe generate a traceback
 
 void NMI_Handler(void);
 void NMI_Handler(void) { while (1); }

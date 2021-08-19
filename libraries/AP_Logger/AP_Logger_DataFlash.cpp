@@ -56,6 +56,7 @@ extern const AP_HAL::HAL& hal;
 
 void AP_Logger_DataFlash::Init()
 {
+
     dev = hal.spi->get_device("dataflash");
     if (!dev) {
         AP_HAL::panic("PANIC: AP_Logger SPIDeviceDriver not found");

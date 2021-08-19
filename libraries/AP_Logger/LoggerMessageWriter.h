@@ -71,7 +71,7 @@ private:
     uint16_t _rally_number_to_send;
     Stage stage = Stage::WRITE_NEW_RALLY_MESSAGE;
 };
-
+//DF = Data Flash
 class LoggerMessageWriter_DFLogStart : public LoggerMessageWriter {
 public:
     LoggerMessageWriter_DFLogStart() :

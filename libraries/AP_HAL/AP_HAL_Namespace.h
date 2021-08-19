@@ -66,5 +66,5 @@ namespace AP_HAL {
     };
 
     // Must be implemented by the concrete HALs.
-    const HAL& get_HAL();
+    const HAL& get_HAL(); //get_HAL is function that returns the class HAL.
 }

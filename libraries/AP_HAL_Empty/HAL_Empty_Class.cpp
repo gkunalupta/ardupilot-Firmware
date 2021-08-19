@@ -56,7 +56,7 @@ void HAL_Empty::run(int argc, char* const argv[], Callbacks* callbacks) const
     scheduler->init();
     serial(0)->begin(115200);
     _member->init();
-
+    //hal.console->printf("in empty haln"); \
     callbacks->setup();
     scheduler->set_system_initialized();
 

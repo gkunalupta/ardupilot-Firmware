@@ -137,6 +137,9 @@
 #error "No CONFIG_HAL_BOARD_SUBTYPE set"
 #endif
 
+
+//#define HAL_SERIAL0_BAUD_DEFAULT 9600
+
 #ifndef HAL_OS_POSIX_IO
 #define HAL_OS_POSIX_IO 0
 #endif
@@ -264,3 +267,11 @@
 #ifndef HAL_INS_ENABLED
 #define HAL_INS_ENABLED (!defined(HAL_BUILD_AP_PERIPH))
 #endif
+
+
+
+/*********** edited ***************/
+
+//#ifndef HAL_LOGGING_DATAFLASH
+//#define HAL_LOGGING_DATAFLASH 1
+//#endif
