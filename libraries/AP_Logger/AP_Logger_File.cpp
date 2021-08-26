@@ -72,6 +72,7 @@ void AP_Logger_File::Init()
 
     const uint32_t desired_bufsize = bufsize;
 
+    hal.console->printf("AP_logger_file\n");
     // If we can't allocate the full size, try to reduce it until we can allocate it
     while (!_writebuf.set_size(bufsize) && bufsize >= _writebuf_chunk) {
         bufsize *= 0.9;

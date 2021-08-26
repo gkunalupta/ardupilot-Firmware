@@ -92,7 +92,7 @@ void AP_LoggerTest::setup(void)
             l1    : (int32_t)(i * 5000),
             l2    : (int32_t)(i * 16268)
         };
-        hal.console->printf("gettobyte\n");
+       hal.console->printf("gettobyte\n");
         logger.WriteBlock(&pkt, sizeof(pkt));
         total_micros += AP_HAL::micros() - start;
         hal.scheduler->delay(20);

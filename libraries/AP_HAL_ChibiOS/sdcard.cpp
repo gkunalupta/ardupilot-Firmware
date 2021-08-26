@@ -121,6 +121,7 @@ bool sdcard_init()
             mmcStop(&MMCD1);
             continue;
         }
+        printf("Sdcard_library\n");
         printf("Successfully mounted SDCard (slowdown=%u)\n", (unsigned)sd_slowdown);
         return true;
     }

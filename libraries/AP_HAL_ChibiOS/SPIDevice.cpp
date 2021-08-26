@@ -169,11 +169,11 @@ void SPIDevice::set_slowdown(uint8_t slowdown)
 bool SPIDevice::do_transfer(const uint8_t *send, uint8_t *recv, uint32_t len)
 {
     bool old_cs_forced = cs_forced;
-
+ //   printf("do_transfer_spi 1\n");
     if (!set_chip_select(true)) {
         return false;
     }
-
+  //  printf("do_transfer_spi 2\n");
     bool ret = true;
 
 #if defined(HAL_SPI_USE_POLLED)
@@ -188,6 +188,7 @@ bool SPIDevice::do_transfer(const uint8_t *send, uint8_t *recv, uint32_t len)
         set_chip_select(old_cs_forced);
         return false;
     }
+   // printf("do_transfer_spi 3\n");
     osalSysLock();
     hal.util->persistent_data.spi_count++;
     if (send == nullptr) {
@@ -268,13 +269,17 @@ uint32_t SPIDevice::derive_freq_flag(uint32_t _frequency)
 bool SPIDevice::transfer(const uint8_t *send, uint32_t send_len,
                          uint8_t *recv, uint32_t recv_len)
 {
+
+	// printf("transfer_spi 1\n");
     if (!bus.semaphore.check_owner()) {
         return false;
     }
+  //  printf("transfer_spi 2\n");
     if ((send_len == recv_len && send == recv) || !send || !recv) {
         // simplest cases, needed for DMA
         return do_transfer(send, recv, recv_len?recv_len:send_len);
     }
+  //  printf("transfer_spi 3\n");
     uint8_t buf[send_len+recv_len];
     if (send_len > 0) {
         memcpy(buf, send, send_len);

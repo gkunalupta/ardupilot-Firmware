@@ -3,9 +3,9 @@
 /* ************************************************************ */
 #pragma once
 
-//#include <AP_Filesystem/AP_Filesystem_Available.h>
+#include <AP_Filesystem/AP_Filesystem_Available.h>
 
-#include <AP_HAL/AP_HAL_Boards.h>
+//#include <AP_HAL/AP_HAL_Boards.h>
 
 
 #ifndef HAL_LOGGING_ENABLED
@@ -14,9 +14,10 @@
 
 /*********** edited ***************/
 
-#ifndef HAL_LOGGING_DATAFLASH
-#define HAL_LOGGING_DATAFLASH 1
-#endif
+//#ifndef HAL_LOGGING_DATAFLASH
+//#define HAL_LOGGING_DATAFLASH 1
+//#endif
+//
 
 
 #ifndef HAL_LOGGING_MAVLINK
