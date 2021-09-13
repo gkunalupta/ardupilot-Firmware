@@ -10,11 +10,22 @@
 #include <AP_Common/AP_Common.h>
 #include <stdio.h>
 
-class AP_Wq25_custom {
+
+class AP_spiFlash {
+public:
+AP_spiFlash() { }
+/* Do not allow copies */
+AP_spiFlash(const AP_spiFlash &other) = delete;
+AP_spiFlash &operator=(const AP_spiFlash&) = delete;
+
+// get singleton instance
+static AP_spiFlash *get_singleton(void) {
+return _singleton;
+}
 
 	bool wq25_getSectorCount();
-void wq25_init();
-//bool wq25_getSectorCount();
+        void wq25_init();
+        //bool wq25_getSectorCount();
 
 	void W25_Reset ();
 	void WriteEnable_flash();
@@ -39,11 +50,12 @@ protected:
 	    static const uint16_t page_size_max = 256;
 	    uint8_t *buffer;
 
-	private:
+private:
+ 
+        static AP_spiFlash *_singleton;
 
-
-	    void SPI2_Recv(uint8_t* recv, uint16_t recv_data );
-	    void SPI2_Send(uint8_t* tran, uint16_t tran_data);
+	void SPI2_Recv(uint8_t* recv, uint32_t recv_data );
+	void SPI2_Send(uint8_t* tran, uint32_t tran_data);
 
 	AP_HAL::OwnPtr<AP_HAL::SPIDevice> dev;
 	AP_HAL::Semaphore *dev_sem;
@@ -54,5 +66,9 @@ protected:
 	bool use_32bit_address;
 
 
+};
+
+namespace AP {
+    AP_spiFlash &spiflash();
 };
 

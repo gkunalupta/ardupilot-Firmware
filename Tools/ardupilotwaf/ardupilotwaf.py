@@ -106,7 +106,7 @@ COMMON_VEHICLE_DEPENDENT_LIBRARIES = [
     'AP_WheelEncoder',
     'AP_ExternalAHRS',
     'AP_VideoTX',
-    'AP_wq25_custom',
+    'AP_spiFlash',
     
 ]
 

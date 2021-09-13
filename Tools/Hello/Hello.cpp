@@ -92,12 +92,12 @@ void erase_sector64KB(uint32_t addr);
 void chip_erase(void);
 void WriteSR(uint8_t SR_address, uint8_t SR_data);
 uint8_t ReadSR(uint8_t SR_address);
-void SPI2_Recv( uint8_t* recv, uint16_t recv_data )
+void SPI2_Recv( uint8_t* recv, uint32_t recv_data )
 {
    dev->transfer(nullptr, 0, recv, recv_data);
 }
 
-void SPI2_Send( uint8_t* tran, uint16_t tran_data)
+void SPI2_Send( uint8_t* tran, uint32_t tran_data)
 {
   dev->transfer(tran, tran_data, nullptr, 0);
 }

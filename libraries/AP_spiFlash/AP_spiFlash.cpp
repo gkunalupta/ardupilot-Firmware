@@ -6,10 +6,7 @@
  */
 
 #include <AP_HAL/AP_HAL.h>
-#include "wq25_custom.h"
-
- const AP_HAL::HAL& hal;
-
+#include "AP_spiFlash.h"
 
 
 #define JEDEC_WRITE_ENABLE           0x06
@@ -69,23 +66,25 @@
 #define block10_addr 0x0B0000
 
 
+extern const AP_HAL::HAL &hal;
 
-void AP_Wq25_custom::SPI2_Recv( uint8_t* recv, uint16_t recv_data )
+
+void AP_spiFlash::SPI2_Recv( uint8_t* recv, uint32_t recv_data )
 {
-	WITH_SEMAPHORE(dev_sem);
+   //WITH_SEMAPHORE(dev_sem);
    dev->transfer(nullptr, 0, recv, recv_data);
 }
 
-void AP_Wq25_custom::SPI2_Send( uint8_t* tran, uint16_t tran_data)
+void AP_spiFlash::SPI2_Send( uint8_t* tran, uint32_t tran_data)
 {
-	WITH_SEMAPHORE(dev_sem);
+  //WITH_SEMAPHORE(dev_sem);
   dev->transfer(tran, tran_data, nullptr, 0);
 }
 
-void AP_Wq25_custom:: W25_Reset (void)
+void AP_spiFlash:: W25_Reset (void)
 {
 
-	uint8_t tx_buf[10];
+  uint8_t tx_buf[10];
   dev-> set_chip_select(true);
   tx_buf[0] = reset1;
   tx_buf[1] = reset2;
@@ -94,48 +93,63 @@ void AP_Wq25_custom:: W25_Reset (void)
 }
 
 
-void AP_Wq25_custom::WriteEnable_flash(void)
+void AP_spiFlash::WriteEnable_flash(void)
 {
-
-	uint8_t tx_buf[10];
+   uint8_t tx_buf[10];
+   //WITH_SEMAPHORE(dev_sem);
    dev-> set_chip_select(true);
-    tx_buf[0] = JEDEC_WRITE_ENABLE;
-    SPI2_Send(tx_buf,1);
-      dev-> set_chip_select(false);
+   tx_buf[0] = JEDEC_WRITE_ENABLE;
+   SPI2_Send(tx_buf,1);
+   //dev->transfer(tx_buf, 1, nullptr, 0);
+   dev-> set_chip_select(false);
 }
 
-void AP_Wq25_custom::W25_Read_Data(uint32_t addr, uint8_t* data, uint32_t sz)
+void AP_spiFlash::W25_Read_Data(uint32_t addr, uint8_t* data, uint32_t sz)
 {
-	WITH_SEMAPHORE(dev_sem);
-	uint8_t tx_buf[10];
-	   printf("Kunal\n");
-dev-> set_chip_select(true);
+  hal.console->printf("READ_START\n");
+  //WITH_SEMAPHORE(dev_sem);
+  //hal.console->printf("READ_DATA1\n");
+  uint8_t tx_buf[10];
   tx_buf[0] =JEDEC_READ_DATA;
   tx_buf[1] = (addr >> 16) & 0xFF;
   tx_buf[2] = (addr >> 8) & 0xFF;
   tx_buf[3] = addr & 0xFF;
-  SPI2_Send(tx_buf, 4);
- printf(" Gupta\n");
-  SPI2_Recv(data, sz);
-  printf("Botlab");
 
-   dev-> set_chip_select(false);
+  WITH_SEMAPHORE(dev_sem);
+  dev-> set_chip_select(true);
+  SPI2_Send(tx_buf, 4);
+  SPI2_Recv(data, sz);
+  //dev->transfer(tx_buf, 4, nullptr, 0);
+  //dev->transfer(nullptr, 0, data, sz);
+  dev-> set_chip_select(false);
+  //hal.console->printf("READ_DATA2\n");
+  hal.console->printf("READ_END\n");
 }
 
-void AP_Wq25_custom::W25_Write_Data(uint32_t addr, uint8_t* data, uint32_t sz)
+void AP_spiFlash::W25_Write_Data(uint32_t addr, uint8_t* data, uint32_t sz)
 {
-	uint8_t tx_buf[10];
-  WriteEnable_flash();
-  dev-> set_chip_select(true);
+  //hal.console->printf("WRITE_DATA1\n");
+  hal.console->printf("WRITE_START\n");
+  uint8_t tx_buf[10];
+
   tx_buf[0] = JEDEC_PAGE_WRITE;
   tx_buf[1] = (addr >> 16) & 0xFF;
   tx_buf[2] = (addr >> 8) & 0xFF;
   tx_buf[3] = addr & 0xFF;
+
+  WITH_SEMAPHORE(dev_sem);
+  WriteEnable_flash();
+  //WITH_SEMAPHORE(dev_sem);
+  dev-> set_chip_select(true);
   SPI2_Send(tx_buf, 4);
   SPI2_Send(data, sz);
+  //dev->transfer(tx_buf, 4, nullptr, 0);
+  //dev->transfer(data, sz, nullptr, 0);
   dev-> set_chip_select(false);
+  //hal.console->printf("WRITE_DATA2\n");
+  hal.console->printf("WRITE_END\n");
 }
-uint32_t AP_Wq25_custom::W25_Read_ID(void)
+uint32_t AP_spiFlash::W25_Read_ID(void)
 {
 	uint8_t tx_buf[10];
   uint8_t dt[4];
@@ -147,23 +161,30 @@ uint32_t AP_Wq25_custom::W25_Read_ID(void)
   return (dt[0] << 16) | (dt[1] << 8) | dt[2];
 }
 
-void AP_Wq25_custom::erase_sector4KB(uint32_t addr)
+void AP_spiFlash::erase_sector4KB(uint32_t addr)
 {
-	uint8_t tx_buf[10];
-    WriteEnable_flash();
-    dev-> set_chip_select(true);
+    hal.console->printf("ERASE_START\n");
+    uint8_t tx_buf[10];
+
     tx_buf[0] = JEDEC_SECTOR4_ERASE;
     tx_buf[1] = (addr >> 16) & 0xFF;
     tx_buf[2] = (addr >> 8) & 0xFF;
     tx_buf[3] = addr & 0xFF;
-    SPI2_Send(tx_buf,4);
-    dev-> set_chip_select(false);
-}
-void AP_Wq25_custom::erase_sector32KB(uint32_t addr)
-{
-	uint8_t tx_buf[10];
+
+    WITH_SEMAPHORE(dev_sem);
     WriteEnable_flash();
-     dev-> set_chip_select(true);
+    //WITH_SEMAPHORE(dev_sem);
+    dev-> set_chip_select(true);
+    SPI2_Send(tx_buf,4);
+    //dev->transfer(tx_buf, 4, nullptr, 0);
+    dev-> set_chip_select(false);
+    hal.console->printf("ERASE_END\n");
+}
+void AP_spiFlash::erase_sector32KB(uint32_t addr)
+{
+    uint8_t tx_buf[10];
+    WriteEnable_flash();
+    dev-> set_chip_select(true);
     tx_buf[0] = JEDEC_BLOCK32_ERASE;
     tx_buf[1] = (addr >> 16) & 0xFF;
     tx_buf[2] = (addr >> 8) & 0xFF;
@@ -171,11 +192,11 @@ void AP_Wq25_custom::erase_sector32KB(uint32_t addr)
     SPI2_Send(tx_buf,4);
     dev-> set_chip_select(false);
 }
-void AP_Wq25_custom::erase_sector64KB(uint32_t addr)
+void AP_spiFlash::erase_sector64KB(uint32_t addr)
 {
-	uint8_t tx_buf[10];
+    uint8_t tx_buf[10];
     WriteEnable_flash();
- dev-> set_chip_select(true);
+    dev-> set_chip_select(true);
     tx_buf[0] = JEDEC_BLOCK64_ERASE;
     tx_buf[1] = (addr >> 16) & 0xFF;
     tx_buf[2] = (addr >> 8) & 0xFF;
@@ -183,9 +204,9 @@ void AP_Wq25_custom::erase_sector64KB(uint32_t addr)
     SPI2_Send(tx_buf,4);
    dev-> set_chip_select(false);
 }
-void AP_Wq25_custom::chip_erase(void)
+void AP_spiFlash::chip_erase(void)
 {
-	uint8_t tx_buf[10];
+    uint8_t tx_buf[10];
     WriteEnable_flash();
     dev-> set_chip_select(true);
     tx_buf[0] = JEDEC_BULK_ERASE;
@@ -194,9 +215,9 @@ void AP_Wq25_custom::chip_erase(void)
 }
 
 
-void AP_Wq25_custom::WriteSR(uint8_t SR_address, uint8_t SR_data)
+void AP_spiFlash::WriteSR(uint8_t SR_address, uint8_t SR_data)
 {
-	uint8_t tx_buf[10];
+    uint8_t tx_buf[10];
     WriteEnable_flash();
     dev-> set_chip_select(true);
     tx_buf[0] = SR_address;
@@ -205,7 +226,7 @@ void AP_Wq25_custom::WriteSR(uint8_t SR_address, uint8_t SR_data)
     dev-> set_chip_select(false);
 
 }
-uint8_t AP_Wq25_custom::ReadSR(uint8_t SR_address)
+uint8_t AP_spiFlash::ReadSR(uint8_t SR_address)
 {
 	uint8_t tx_buf[10];
     uint8_t RSR[1] = {0};
@@ -213,15 +234,21 @@ uint8_t AP_Wq25_custom::ReadSR(uint8_t SR_address)
     tx_buf[0] =  SR_address;
     SPI2_Send(tx_buf,1);
     SPI2_Recv(RSR,1);
-   dev-> set_chip_select(false);
+    dev-> set_chip_select(false);
     return RSR[0];
 }
 
-void AP_Wq25_custom::wq25_init(void)
+void AP_spiFlash::wq25_init(void)
 {
-	dev = hal.spi->get_device("dataflash");
+	    //hal.scheduler->delay(5000);
+            buffer = (uint8_t *)hal.util->malloc_type(page_size_max, AP_HAL::Util::MEM_DMA_SAFE);
+            if (buffer == nullptr) {
+                AP_HAL::panic("Out of DMA memory for logging");
+            }
+
+	    dev = hal.spi->get_device("spiflash");
 	    if (!dev) {
-	        AP_HAL::panic("PANIC: AP_Logger SPIDeviceDriver not found");
+	        AP_HAL::panic("PANIC: AP_spiflash SPIDeviceDriver not found");
 	        return;
 	    }
 
@@ -233,19 +260,63 @@ void AP_Wq25_custom::wq25_init(void)
 	    }
 	    flash_died = false;
 
+            //WITH_SEMAPHORE(dev_sem);
+/*
+            uint8_t rx_buf[100];
+
+
+            hal.scheduler->delay(100);
+	    erase_sector4KB(block0_addr);
+	    hal.scheduler->delay(100);
+	    W25_Write_Data(block0_addr,(uint8_t*)"0123/2854/7718/0010/2550/0080/0100/0050/3054/7918\n",59);
+	    hal.scheduler->delay(100);
+
+
+            hal.scheduler->delay(100);
+            W25_Read_Data(block0_addr,rx_buf,59);
+            hal.scheduler->delay(100);
+            hal.console->printf("%s",rx_buf);
+            hal.scheduler->delay(100);
+
+*/
+/*
+	    hal.scheduler->delay(100);
+	    W25_Write_Data(block0_addr,(uint8_t*)"0123/2854/7718/0010/2550/0080/0100/0050/3054/7918\n",59);
+	    hal.scheduler->delay(100);
+*/
+
+/*
+            uint8_t rx_buf[100];
+
+
+            hal.scheduler->delay(100);
+	    erase_sector4KB(block0_addr);
+	    hal.scheduler->delay(100);
+	    W25_Write_Data(block0_addr,(uint8_t*)"0123/2854/7718/0010/2550/0080/0100/0050/3054/7918\n",59);
+	    hal.scheduler->delay(100);
+
+            WITH_SEMAPHORE(dev_sem);
+
+            W25_Read_Data(block0_addr,rx_buf,59);
+            hal.scheduler->delay(100);
+            hal.console->printf("%s",rx_buf);
+            hal.scheduler->delay(100);
+*/
+
 }
 
-bool AP_Wq25_custom::wq25_getSectorCount(void)
+bool AP_spiFlash::wq25_getSectorCount(void)
 {
 	 //WaitReady();
-	 uint8_t tx_buf[10];
+	 //uint8_t tx_buf[10];
 	    WITH_SEMAPHORE(dev_sem);
 
 	    // Read manufacturer ID
-	    tx_buf[0] = JEDEC_DEVICE_ID;
-	    SPI2_Send(tx_buf,1);
-	    SPI2_Recv(buffer,4);
-	    //dev->transfer(&cmd, 1, buffer, 4);
+	    //tx_buf[0] = JEDEC_DEVICE_ID;
+	    //SPI2_Send(tx_buf,1);
+	    //SPI2_Recv(buffer,4);
+            uint8_t cmd = JEDEC_DEVICE_ID;
+	    dev->transfer(&cmd, 1, buffer, 4);
 
 	    uint32_t id = buffer[0] << 16 | buffer[1] << 8 | buffer[2];
 
@@ -298,4 +369,6 @@ bool AP_Wq25_custom::wq25_getSectorCount(void)
 	    printf("SPI Flash 0x%08x found pages=%u erase=%uk\n",
 	           id, df_NumPages, (df_PagePerBlock * (uint32_t)df_PageSize)/1024);
 	    return true;
+
+
 }
